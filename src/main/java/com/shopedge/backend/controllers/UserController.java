@@ -15,7 +15,7 @@ import com.shopedge.backend.services.UserService;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5174" }, allowCredentials = "true")
 public class UserController {
 	
 	private final UserService userService;
