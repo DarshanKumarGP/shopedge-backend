@@ -22,4 +22,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
     // Custom query to get detailed order items with product info
     @Query("SELECT oi FROM OrderItem oi JOIN FETCH oi.order WHERE oi.order.orderId = :orderId")
     List<OrderItem> findOrderItemsWithOrderDetails(@Param("orderId") String orderId);
+    
+     @Query("SELECT oi FROM OrderItem oi WHERE oi.order.userId = :userId AND oi.order.status = 'SUCCESS'")
+    	List<OrderItem> findSuccessfulOrderItemsByUserId(int userId);
 }

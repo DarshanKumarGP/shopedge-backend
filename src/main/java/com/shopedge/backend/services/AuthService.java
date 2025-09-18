@@ -133,4 +133,17 @@ public class AuthService {
             return null;
         }
     }
+    
+    
+    /**
+     * Invalidate the user's JWT token in the database.
+     *
+     * @param user The authenticated user
+     */
+    public void logout(User user) {
+        int userId = user.getUserId();
+
+        // Delete token record if exists
+        jwtTokenRepository.deleteByUserId(userId);
+    }
 }
