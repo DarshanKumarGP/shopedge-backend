@@ -19,5 +19,12 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Inte
     @Transactional
     @Query("DELETE FROM ProductImage pi WHERE pi.product.productId = :productId")
     void deleteByProductId(@Param("productId") Integer productId);
+    
+    /**
+     * Check if any images exist for a product
+     * @param productId Product ID
+     * @return true if images exist, false otherwise
+     */
+     boolean existsByProduct_ProductId(Integer productId);
 }
 
