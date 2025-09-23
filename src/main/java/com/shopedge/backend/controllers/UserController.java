@@ -35,4 +35,5 @@ public class UserController {
 			return ResponseEntity.badRequest().body (Map.of("error", e.getMessage()));
 		}
 	}
+	
 }

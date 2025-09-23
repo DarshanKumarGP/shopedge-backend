@@ -15,7 +15,12 @@ import java.util.Map;
  * Provides endpoints for modifying and retrieving user data
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:5174", allowCredentials = "true")
+@CrossOrigin(
+		  origins = {"http://localhost:3000", "http://localhost:5174", "http://localhost:5173"},
+		  allowCredentials = "true",
+		  allowedHeaders = {"Content-Type", "Authorization", "X-Timestamp", "X-Requested-With"},
+		  exposedHeaders = {"Authorization", "X-Timestamp"}
+		)
 @RequestMapping("/admin/user")
 public class AdminUserController {
 
@@ -87,7 +92,7 @@ public class AdminUserController {
      * Get user details by ID
      * GET /admin/user/getbyid
      */
-    @GetMapping("/getbyid")
+    @PostMapping("/getbyid")
     public ResponseEntity<?> getUserById(@RequestBody Map<String, Integer> userRequest) {
         try {
             Integer userId = userRequest.get("userId");
@@ -125,4 +130,5 @@ public class AdminUserController {
                 .body(Map.of("error", "Something went wrong while retrieving the user"));
         }
     }
+    
 }

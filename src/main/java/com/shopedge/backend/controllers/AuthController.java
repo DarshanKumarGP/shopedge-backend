@@ -14,7 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5174" }, allowCredentials = "true")
+@CrossOrigin(
+		  origins = {"http://localhost:3000", "http://localhost:5174", "http://localhost:5173"},
+		  allowCredentials = "true",
+		  allowedHeaders = {"Content-Type", "Authorization", "X-Timestamp", "X-Requested-With"},
+		  exposedHeaders = {"Authorization", "X-Timestamp"}
+		)
 @RequestMapping("/api/auth")
 public class AuthController {
     
@@ -95,4 +100,18 @@ public class AuthController {
             return ResponseEntity.status(500).body(error);
         }
     }
+    
+    @GetMapping("/verify")
+    public ResponseEntity<?> verify(HttpServletRequest request) {
+        User user = (User) request.getAttribute("authenticatedUser");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error","Not authenticated"));
+        }
+        Map<String,Object> body = new HashMap<>();
+        body.put("username", user.getUsername());
+        body.put("role", user.getRole().name());
+        body.put("userId", user.getUserId());
+        return ResponseEntity.ok(body);
+    }
 }
+

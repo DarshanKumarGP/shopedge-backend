@@ -16,7 +16,12 @@ import java.util.Map;
  * Provides endpoints for adding and deleting products
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:5174", allowCredentials = "true")
+@CrossOrigin(
+		  origins = {"http://localhost:3000", "http://localhost:5174", "http://localhost:5173"},
+		  allowCredentials = "true",
+		  allowedHeaders = {"Content-Type", "Authorization", "X-Timestamp", "X-Requested-With"},
+		  exposedHeaders = {"Authorization", "X-Timestamp"}
+		)
 @RequestMapping("/admin/products")
 public class AdminProductController {
 
