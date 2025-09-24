@@ -1,10 +1,12 @@
 package com.shopedge.backend.controllers;
 
 
+import com.shopedge.backend.entities.Category;
 import com.shopedge.backend.entities.Product;
 import com.shopedge.backend.entities.User;
 import com.shopedge.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -125,4 +127,17 @@ public class ProductController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+    
+    @GetMapping("/categories")
+    public ResponseEntity<List<Category>> getCategories(HttpServletRequest request) {
+        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Example: return category names, or you can return Category objects
+        List<Category> categories = productService.getAllCategories();
+        return ResponseEntity.ok(categories);
+    }
+
 }
