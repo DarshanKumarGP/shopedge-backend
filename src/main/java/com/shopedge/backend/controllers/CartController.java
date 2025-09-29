@@ -13,7 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5174", "http://localhost:5173"}, allowCredentials = "true")
+@CrossOrigin(
+		  origins = {"http://localhost:3000", "http://localhost:5174", "http://localhost:5173","http://localhost", "http://localhost:80","http://127.0.0.1:3000", "http://127.0.0.1:5174", "http://127.0.0.1:5173","http://127.0.0.1", "http://127.0.0.1:80"},
+		  allowCredentials = "true",
+		  allowedHeaders = {"Content-Type", "Authorization", "X-Timestamp", "X-Requested-With"},
+		  exposedHeaders = {"Authorization", "X-Timestamp"}
+		)
 @RequestMapping("/api/cart")
 public class CartController {
     

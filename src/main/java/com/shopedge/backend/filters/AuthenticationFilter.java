@@ -1,6 +1,5 @@
 package com.shopedge.backend.filters;
 
-
 import com.shopedge.backend.entities.Role;
 import com.shopedge.backend.entities.User;
 import com.shopedge.backend.repositories.UserRepository;
@@ -31,10 +30,26 @@ public class AuthenticationFilter implements Filter {
     private final AuthService authService;
     private final UserRepository userRepository;
     
-    private static final String ALLOWED_ORIGIN = "http://localhost:3000";
+    // Updated to support both development and Docker environments
+    private static final String[] ALLOWED_ORIGINS = {
+        "http://localhost:3000",     // Development
+        "http://localhost:5174",     // Vite dev server
+        "http://localhost:5173",     // Vite dev server
+        "http://localhost",          // Docker (port 80)
+        "http://localhost:80",       // Docker (explicit port 80)
+        "http://127.0.0.1:3000",     // Alternative localhost
+        "http://127.0.0.1:5174",     // Alternative localhost
+        "http://127.0.0.1:5173",     // Alternative localhost
+        "http://127.0.0.1",          // Alternative localhost
+        "http://127.0.0.1:80"        // Alternative localhost with port
+    };
+    
+    // FIXED: Added correct register endpoint paths
     private static final String[] UNAUTHENTICATED_PATHS = {
-        "/api/users/register",
-        "/api/auth/login"
+        "/api/users/register",       // Your existing endpoint (if used)
+        "/api/auth/register",        // FIXED: Added this missing path
+        "/api/auth/login",           // Existing login path
+        "/actuator/health"           // Health check endpoint
     };
     
     public AuthenticationFilter(AuthService authService, UserRepository userRepository) {
@@ -67,13 +82,14 @@ public class AuthenticationFilter implements Filter {
         
         // Allow unauthenticated paths
         if (Arrays.asList(UNAUTHENTICATED_PATHS).contains(requestURI)) {
+            logger.info("Public endpoint accessed: {}", requestURI);
             chain.doFilter(request, response);
             return;
         }
         
         // Handle preflight (OPTIONS) requests
         if (httpRequest.getMethod().equalsIgnoreCase("OPTIONS")) {
-            setCORSHeaders(httpResponse);
+            setCORSHeaders(httpResponse, httpRequest);
             return;
         }
         
@@ -121,10 +137,21 @@ public class AuthenticationFilter implements Filter {
         chain.doFilter(request, response);
     }
     
-    private void setCORSHeaders(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+    // UPDATED: Dynamic CORS headers based on request origin
+    private void setCORSHeaders(HttpServletResponse response, HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        
+        // Check if origin is in allowed list
+        if (origin != null && Arrays.asList(ALLOWED_ORIGINS).contains(origin)) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        } else {
+            // Fallback to localhost:3000 for development
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        }
+        
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Timestamp, X-Requested-With");
+        response.setHeader("Access-Control-Expose-Headers", "Authorization, X-Timestamp");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setStatus(HttpServletResponse.SC_OK);
     }
